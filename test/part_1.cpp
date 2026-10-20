@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
 float potentiometer_val = 0.0;
-const int POTENTIOMETER_PIN = D2;
-const int PWM_PIN = D3;
+const int POTENTIOMETER_PIN = 2;
+const int PWM_PIN = 3;
 
 // this is how to create a FreeRTOS task, which allows for multiple tasks to run simultaneously
 // you can set the loop rates, task priorities, and behaviors for each task independently
