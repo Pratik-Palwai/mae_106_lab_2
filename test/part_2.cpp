@@ -3,8 +3,8 @@
     #include <Arduino.h>
 
     float potentiometer_val = 0.0;
-    const int POTENTIOMETER_PIN = D2;
-    const int OUTPUT_PIN = D3;
+    const int POTENTIOMETER_PIN = 2;
+    const int OUTPUT_PIN = 3;
 
     float filtered_signal_previous = 0.0;
     float filtered_signal = 0.0;
