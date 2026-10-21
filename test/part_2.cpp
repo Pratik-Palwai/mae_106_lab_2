@@ -18,6 +18,7 @@
         return filter_output;
     }
 
+    // RTOS task to send a square wave on the output pin. by changing the value in pdMS_TO_TICKS you can change how fast the signal toggles
     void sendSquareWave(void *param) {
         while (true) {
             square_wave_state = 1 - square_wave_state;
@@ -26,19 +27,22 @@
         }
     }
 
+    // RTOS task to filter the signal. this occurs at 0.5 kHz to provide smooth data
     void filterData(void *param) {
         while(true) {
             potentiometer_val = analogRead(POTENTIOMETER_PIN) / 4095.0;
             filtered_signal = averagingFilter(square_wave_state, potentiometer_val);
 
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(2));
         }
     }
 
+
+    // RTOS task for printing data to serial. this occurs at 250 Hz to still be smooth but not take up too much compute
     void serialPrint(void *param) {
         while (true) {
             Serial.println(">" + String(square_wave_state) + "," + String(potentiometer_val) + "," + String(filtered_signal));
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(4));
         }
     }
 
