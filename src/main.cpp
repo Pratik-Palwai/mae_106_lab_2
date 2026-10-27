@@ -4,9 +4,8 @@ const int LAB_SECTION = 1;
 
 float potentiometer_val = 0.0;
 const int POTENTIOMETER_PIN = 2;
-const int PWM_PIN = 3;
-
 const int OUTPUT_PIN = 3;
+
 float filtered_signal_previous = 0.0;
 float filtered_signal = 0.0;
 
@@ -22,7 +21,7 @@ void sendPWM(void *param) {
     while (true) {
     // analogRead returns a value between 0 and 4096. analogWrite sends a PWM value with a duty cycle between 0 (0%) and 255 (100%)
         potentiometer_val = analogRead(POTENTIOMETER_PIN);
-        analogWrite(PWM_PIN, potentiometer_val * 255.0 / 4095.0);
+        analogWrite(OUTPUT_PIN, potentiometer_val * 255.0 / 4095.0);
 
         // this sets the loop rate to 4 ms or 250 Hz
         // vTaskDelay is non-blocking, meaning while the sendPWM task is paused it will allow other tasks, if they exist, to be executed
@@ -75,7 +74,7 @@ void serialPrintPart2(void *param) {
 // there is no need to put anything in loop() to execute
 void setup() {
     pinMode(POTENTIOMETER_PIN, INPUT_PULLDOWN);
-    pinMode(PWM_PIN, OUTPUT);
+    pinMode(OUTPUT_PIN, OUTPUT);
 
     Serial.begin(115200);
 
