@@ -71,7 +71,6 @@ void serialPrintPart2(void *param) {
 }
 
 // with FreeRTOS, you just need to create the task and the controller will take care of the rest
-// there is no need to put anything in loop() to execute
 void setup() {
     pinMode(POTENTIOMETER_PIN, INPUT_PULLDOWN);
     pinMode(OUTPUT_PIN, OUTPUT);
@@ -93,4 +92,5 @@ void setup() {
     }
 }
 
+// there is no need to put anything in loop() to execute
 void loop() { }
