@@ -1,10 +1,10 @@
 #include <Arduino.h>
 
-const int LAB_SECTION = 1;
+const int LAB_SECTION = 2;
 
 float potentiometer_val = 0.0;
-const int POTENTIOMETER_PIN = 2;
-const int OUTPUT_PIN = 3;
+const int POTENTIOMETER_PIN = 3;
+const int OUTPUT_PIN = 4;
 
 float filtered_signal_previous = 0.0;
 float filtered_signal = 0.0;
@@ -16,7 +16,7 @@ int square_wave_state = 1;
 // you can set the loop rates, task priorities, and behaviors for each task independently
 // for example, this would be useful for reading an analog pin
 // you want the pin to be read very quickly so that the filters are getting good data, but serial output doesn't need to happen that fast
-// you can set the analog pin to be read every 2 ms, for example, and have data sent through USB every 50 ms
+// you can set the analog pin to be read every 2 ms, for example, and have data sent through USB every 10 ms
 void sendPWM(void *param) {
     while (true) {
     // analogRead returns a value between 0 and 4096. analogWrite sends a PWM value with a duty cycle between 0 (0%) and 255 (100%)
@@ -29,11 +29,11 @@ void sendPWM(void *param) {
     }
 }
 
-// RTOS task for printing data to serial. this occurs at 250 Hz to still be smooth but not take up too much compute
+// RTOS task for printing data to serial. this occurs at 100 Hz to still be smooth but not take up too much compute
 void serialPrintPart1(void *param) {
     while (true) {
-        Serial.println(potentiometer_val);
-        vTaskDelay(pdMS_TO_TICKS(4)); // serial printing runs every 10 ms or 100 Hz. you can change this if you want more or less data
+        Serial.println(">potentiometer_val:" + String(potentiometer_val));
+        vTaskDelay(pdMS_TO_TICKS(10)); // serial printing runs every 10 ms or 100 Hz. you can change this if you want more or less data
     }
 }
 
@@ -65,7 +65,10 @@ void filterData(void *param) {
 
 void serialPrintPart2(void *param) {
     while (true) {
-        Serial.println(">" + String(square_wave_state) + "," + String(potentiometer_val) + "," + String(filtered_signal));
+        Serial.print(">square_wave_state:" + String(square_wave_state));
+        Serial.print(",potentiometer_val:" + String(potentiometer_val));
+        Serial.print(",filtered_signal:" + String(filtered_signal));
+        Serial.print("\r\n");
         vTaskDelay(pdMS_TO_TICKS(4));
     }
 }
