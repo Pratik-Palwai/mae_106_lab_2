@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+// set this to 1 to run the code for lab 2 part 1 (PWM). set this to 2 to run the code for part 2 (digital filter)
 const int LAB_SECTION = 2;
 
 float potentiometer_val = 0.0;
@@ -9,7 +10,6 @@ const int OUTPUT_PIN = 4;
 float filtered_signal_previous = 0.0;
 float filtered_signal = 0.0;
 
-// set this to 1 to run the code for lab 3 part 1. set this to 2 to run the code for part 2
 int square_wave_state = 1;
 
 // this is how to create a FreeRTOS task, which allows for multiple tasks to run simultaneously
@@ -19,7 +19,7 @@ int square_wave_state = 1;
 // you can set the analog pin to be read every 2 ms, for example, and have data sent through USB every 10 ms
 void sendPWM(void *param) {
     while (true) {
-    // analogRead returns a value between 0 and 4096. analogWrite sends a PWM value with a duty cycle between 0 (0%) and 255 (100%)
+    // analogRead returns a value between 0 and 4095. analogWrite sends a PWM value with a duty cycle between 0 (0%) and 255 (100%)
         potentiometer_val = analogRead(POTENTIOMETER_PIN);
         analogWrite(OUTPUT_PIN, potentiometer_val * 255.0 / 4095.0);
 
@@ -53,9 +53,10 @@ void sendSquareWave(void *param) {
     }
 }
 
-// RTOS task to filter the signal. this occurs at 0.5 kHz to provide smooth data
+// RTOS task to filter the signal. this occurs at 500 Hz to provide smooth data
 void filterData(void *param) {
     while(true) {
+        // potentiometer is normalized to 0.0-1.0 and used as the filter strength
         potentiometer_val = analogRead(POTENTIOMETER_PIN) / 4095.0;
         filtered_signal = averagingFilter(square_wave_state, potentiometer_val);
 
@@ -63,6 +64,7 @@ void filterData(void *param) {
     }
 }
 
+// RTOS task for printing data to serial. this occurs every 4 ms or 250 Hz
 void serialPrintPart2(void *param) {
     while (true) {
         Serial.print(">square_wave_state:" + String(square_wave_state));
@@ -81,7 +83,7 @@ void setup() {
     Serial.begin(115200);
 
     // the relevant parameters are the task itself (sendPWM), the task name ("MAIN"), and allocated memory (4096 bytes is usually enough)
-    // if two tasks try to execute at the same time the controller pick will the most important one
+    // if two tasks try to execute at the same time the controller will pick the most important one (higher priority number)
 
     if (LAB_SECTION == 1) {
         xTaskCreate(sendPWM, "MAIN", 4096, NULL, 2, NULL); // priority 2 -> higher importance
